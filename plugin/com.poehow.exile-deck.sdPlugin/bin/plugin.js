@@ -123,11 +123,12 @@ async function renderKey(context) {
         return setImage(context, R.moversKey({ direction: s.direction, entry: e, icon, rank: i + 1, total: top.length, divPrice }));
       }
       case 'league': {
-        const { league, divPrice } = await leagueCtx();
+        const { league: priced, divPrice } = await leagueCtx();
+        const league = await api.selectedLeague();
         const start = await api.leagueStart(league);
         const day = start ? Math.max(1, Math.floor((Date.now() - start) / 864e5) + 1) : null;
         let divIcon = null;
-        try { const cur = await api.priceList(league, 'Currency'); const d = cur.find((x) => eq(x.name, 'Divine Orb')); divIcon = d ? await api.icon(d.icon) : null; } catch (_) {}
+        try { const cur = await api.priceList(priced, 'Currency'); const d = cur.find((x) => eq(x.name, 'Divine Orb')); divIcon = d ? await api.icon(d.icon) : null; } catch (_) {}
         return setImage(context, R.leagueKey({ league, day, divPrice, divIcon, offline: !api.lastSuccess && !!api.lastError }));
       }
       case 'boss': {
@@ -320,9 +321,10 @@ async function onSendToPlugin(msg) {
     send({ event: 'sendToPropertyInspector', action: msg.action, context: msg.context, payload: { bosses: names } });
   } else if (p.req === 'meta') {
     const league = await api.league();
-    const leagues = (await api.leagues()).map((x) => x.id);
+    const leagues = await api.choices();
+    const selected = await api.selectedLeague();
     send({ event: 'sendToPropertyInspector', action: msg.action, context: msg.context, payload: {
-      meta: { league, leagues, exchangeTypes: EXCHANGE_TYPES, itemTypes: ITEM_TYPES, glyphs: R.GLYPHS, override: api.leagueOverride },
+      meta: { league: selected, priced: league, leagues, exchangeTypes: EXCHANGE_TYPES, itemTypes: ITEM_TYPES, glyphs: R.GLYPHS, override: api.leagueOverride },
     } });
   }
 }

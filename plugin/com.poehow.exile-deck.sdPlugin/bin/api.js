@@ -39,6 +39,16 @@ function safePage(url, fallback) {
   return fallback;
 }
 
+const baseName = (id) => String(id).replace(/\b(SSF|HC|Hardcore)\b/gi, ' ').replace(/\s+/g, ' ').trim();
+/** Solo leagues have no market: an SSF league uses the prices of its trade league. Other leagues map to themselves. */
+function tradeLeague(id, leagues) {
+  const l = leagues.find((x) => x.id === id);
+  if (!(l ? l.ssf : /\bSSF\b/i.test(id))) return id;
+  const hc = l ? !!l.hardcore : /\b(HC|Hardcore)\b/i.test(id);
+  const hit = leagues.find((x) => !x.ssf && !x.ruthless && !!x.hardcore === hc && baseName(x.id) === baseName(id));
+  return hit ? hit.id : id;
+}
+
 class DeckApi {
   constructor(cacheDir, log) {
     this.dir = cacheDir;
@@ -132,7 +142,14 @@ class DeckApi {
     const ls = (await this.meta()).leagues;
     return Array.isArray(ls) ? ls : [];
   }
+  /** The league to price with. See selectedLeague() for the one the user chose. */
   async league() {
+    const id = await this.selectedLeague();
+    return tradeLeague(id, await this.leagues());
+  }
+  /** Leagues the user can choose: Ruthless has no prices of its own. */
+  async choices() { return (await this.leagues()).filter((l) => !l.ruthless).map((l) => l.id); }
+  async selectedLeague() {
     if (this.leagueOverride) return this.leagueOverride;
     const m = await this.meta();
     if (m.currentLeague) return m.currentLeague;
@@ -203,7 +220,8 @@ class DeckApi {
     const list = (data.items || []).map((s) => ({
       id: s.id, title: s.title, short: String(s.title || '').split(',')[0].trim(), slug: s.slug || slugify(s.title),
       url: safePage(s.url, `${SITE}/economy/bosses`), image: safeIcon(s.image),
-      cost: num(s.cost) || 0, ev: num(s.ev) || 0, profit: num(s.profit) || 0, runs: num(s.runs) || 0,
+      cost: num(s.cost), ev: num(s.ev), profit: num(s.profit), // null = unknown, not zero
+      runs: num(s.runs) || 0,
       breakEvenRuns: num(s.breakEvenRuns), completeness: s.completeness || 'no_user_data',
       realData: !!s.realData, missingPrices: num(s.missingPrices) || 0,
     }));
@@ -215,7 +233,7 @@ class DeckApi {
   /** Bosses worth ranking: complete data, real drop rates, a decent sample. */
   static ranked(list, minRuns = 100) {
     return list
-      .filter((b) => b.completeness === 'complete' && b.realData && b.runs >= minRuns)
+      .filter((b) => b.completeness === 'complete' && b.realData && b.profit != null && b.runs >= minRuns)
       .sort((a, b) => b.profit - a.profit);
   }
   static findBoss(list, key) {
@@ -262,4 +280,4 @@ class DeckApi {
   }
 }
 
-module.exports = { DeckApi, EXCHANGE_TYPES, ITEM_TYPES, eq, norm, safeIcon, safePage, SITE, UA };
+module.exports = { DeckApi, tradeLeague, EXCHANGE_TYPES, ITEM_TYPES, eq, norm, safeIcon, safePage, SITE, UA };

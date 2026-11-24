@@ -9,7 +9,7 @@ const { execFileSync } = require('node:child_process');
 const ROOT = path.join(__dirname, '..');
 const PLUGIN = path.join(ROOT, 'plugin', 'com.poehow.exile-deck.sdPlugin');
 const manifest = JSON.parse(fs.readFileSync(path.join(PLUGIN, 'manifest.json'), 'utf8'));
-const { DeckApi, safeIcon, safePage } = require(path.join(PLUGIN, 'bin', 'api.js'));
+const { DeckApi, tradeLeague, safeIcon, safePage } = require(path.join(PLUGIN, 'bin', 'api.js'));
 const { parseItem, priceItem } = require(path.join(PLUGIN, 'bin', 'itemtext.js'));
 const { cleanRegex, regexProblem } = require(path.join(PLUGIN, 'bin', 'regex.js'));
 const { VERSION } = require(path.join(PLUGIN, 'bin', 'version.js'));
@@ -43,6 +43,12 @@ test('manifest: IDs, version and image files', () => {
   for (const [p] of images) for (const s of ['.png', '@2x.png']) assert.ok(fs.existsSync(path.join(PLUGIN, p + s)), p + s);
 });
 
+test('the GGG disclaimer is in the README, manifest and settings page', () => {
+  const line = "This product isn't affiliated with or endorsed by Grinding Gear Games in any way.";
+  assert.ok(manifest.Description.includes(line));
+  for (const f of ['README.md', 'plugin/com.poehow.exile-deck.sdPlugin/pi/index.html']) assert.ok(fs.readFileSync(path.join(ROOT, f), 'utf8').includes(line), f);
+});
+
 test('actions that send input cannot be chained in a Multi Action', () => {
   for (const id of ['chat', 'pricecheck', 'regex']) {
     assert.equal(manifest.Actions.find((a) => a.UUID.endsWith('.' + id)).SupportedInMultiActions, false, id);
@@ -70,6 +76,31 @@ test('api: league, prices and bosses from the contract shapes', withFetch(async 
   assert.ok(ranked.every((b, i) => i === 0 || ranked[i - 1].profit >= b.profit));
   assert.ok(ranked.every((b) => b.completeness === 'complete'));
   assert.equal(DeckApi.findBoss(bosses, 'uber shaper').title, 'Uber Shaper');
+}));
+
+test('leagues: SSF uses its trade league and Ruthless is not offered', withFetch(async () => {
+  serveFixtures();
+  const api = new DeckApi(tmp());
+  assert.ok(!(await api.choices()).some((id) => /Ruthless/.test(id)));
+  for (const [chosen, priced] of [['SSF Covens', 'Covens'], ['HC SSF Covens', 'Hardcore Covens'], ['Covens', 'Covens'], ['Standard', 'Standard']]) {
+    api.leagueOverride = chosen;
+    assert.equal(await api.league(), priced);
+    assert.equal(await api.selectedLeague(), chosen);
+  }
+  // Unlisted SSF ids still map when the trade league is known, and an unknown league is left alone.
+  assert.equal(tradeLeague('SSF Standard', await api.leagues()), 'Standard');
+  assert.equal(tradeLeague('SSF Hardcore', await api.leagues()), 'Hardcore');
+  assert.equal(tradeLeague('SSF Nowhere', await api.leagues()), 'SSF Nowhere');
+}));
+
+test('bosses: unknown values stay unknown instead of becoming zero', withFetch(async () => {
+  globalThis.fetch = async () => reply({ items: [{ id: 1, title: 'Test Boss', cost: null, ev: 5, profit: null, runs: 500, completeness: 'complete', realData: true }] });
+  const [boss] = await new DeckApi(tmp()).bosses('Covens');
+  assert.equal(boss.profit, null);
+  assert.deepEqual(DeckApi.ranked([boss]), []);
+  const R = require(path.join(PLUGIN, 'bin', 'render.js'));
+  assert.match(R.bossKey({ boss, art: null, divPrice: 200 }), />no data</);
+  assert.doesNotMatch(R.bossDetail({ boss, divPrice: 200 }), />0c</);
 }));
 
 test('api: revalidates with the ETag and serves stale data when offline', withFetch(async () => {

@@ -40,6 +40,36 @@
    "ssf": false,
    "ruthless": false,
    "current": false
+  },
+  {
+   "id": "SSF Covens",
+   "name": "SSF Covens",
+   "start": "2026-11-13T19:00:00Z",
+   "end": null,
+   "hardcore": false,
+   "ssf": true,
+   "ruthless": false,
+   "current": true
+  },
+  {
+   "id": "HC SSF Covens",
+   "name": "HC SSF Covens",
+   "start": "2026-11-13T19:00:00Z",
+   "end": null,
+   "hardcore": true,
+   "ssf": true,
+   "ruthless": false,
+   "current": true
+  },
+  {
+   "id": "Ruthless Covens",
+   "name": "Ruthless Covens",
+   "start": "2026-11-13T19:00:00Z",
+   "end": null,
+   "hardcore": false,
+   "ssf": false,
+   "ruthless": true,
+   "current": true
   }
  ],
  "currentLeague": "Covens",

@@ -20,6 +20,7 @@
 </head>
 <body>
 <div id="app"></div>
+<div class="note" style="margin-top:14px">This product isn't affiliated with or endorsed by Grinding Gear Games in any way.</div>
 <script>
 'use strict';
 let ws, piUUID, actionInfo, settings = {}, globals = {}, meta = null;
@@ -87,7 +88,7 @@ function build() {
     const ls = meta ? meta.leagues : [];
     h += '<h3>League (applies to all keys)</h3>';
     h += row('League', select('league', [['', 'Auto (current challenge league)'], ...ls.map((l) => [l, l])], globals.league || ''));
-    h += `<div class="note">Now using <b>${esc(meta ? meta.league : '…')}</b>. Press the key to open poe.how.</div>`;
+    h += `<div class="note">Now using <b>${esc(meta ? meta.league : '…')}</b>. ${meta && meta.priced && meta.priced !== meta.league ? `Prices come from <b>${esc(meta.priced)}</b>. ` : ''}Press the key to open poe.how.</div>`;
   } else if (k === 'boss') {
     const mode = settings.mode || 'rank';
     h += row('Show', select('mode', [['rank', 'Nth most profitable boss'], ['boss', 'A specific boss'], ['summary', 'Bossing summary']], mode));

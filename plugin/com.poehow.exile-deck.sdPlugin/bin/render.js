@@ -266,7 +266,7 @@ function signedPrice(chaos, divPrice) {
 function bossKey({ boss, art, divPrice, rank }) {
   if (!boss) return frame(C.faint, glyph('crown', C.dim, 40, 14, 64) + txt(72, 124, 'no boss', 16, C.faint));
   const q = QUALITY[boss.completeness];
-  const noData = boss.completeness === 'no_user_data' || (!boss.realData && !boss.ev) || (!boss.ev && !boss.cost);
+  const noData = boss.profit == null || boss.completeness === 'no_user_data' || (!boss.realData && !boss.ev) || (!boss.ev && !boss.cost);
   const col = noData ? C.flat : boss.profit > 0.5 ? C.up : boss.profit < -0.5 ? C.down : C.flat;
   let inner = art ? img(art, 34, 2, 76, 76) : glyph('crown', ACCENT.boss, 42, 10, 60, { width: 4 });
   if (rank) inner += `<rect x="9" y="9" width="${rank >= 10 ? 38 : 30}" height="22" rx="11" fill="#000" fill-opacity="0.55"/>` + txt(rank >= 10 ? 28 : 24, 26, '#' + rank, 15, C.gold);
@@ -293,7 +293,7 @@ function bossDetail({ boss, divPrice }) {
   const col = boss.profit > 0.5 ? C.up : boss.profit < -0.5 ? C.down : C.flat;
   inner += row(90, 'Profit', signedPrice(boss.profit, divPrice), col);
   inner += row(112, 'Runs', String(boss.runs));
-  const be = boss.breakEvenRuns != null ? boss.breakEvenRuns + ' runs' : boss.profit > 0 ? '—' : 'never';
+  const be = boss.breakEvenRuns != null ? boss.breakEvenRuns + ' runs' : boss.profit == null || boss.profit > 0 ? '—' : 'never';
   inner += row(132, 'Payback', be, C.dim);
   return frame(ACCENT.boss, inner, { glow: 0.14 });
 }

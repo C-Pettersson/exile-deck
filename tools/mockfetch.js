@@ -12,7 +12,9 @@ globalThis.fetch = async (url, opts = {}) => {
   else if (u.hostname === 'poe.how' && u.pathname === '/api/deck/v1/strategies') file = `strategies_${q('category')}.json`;
   else if (u.hostname === 'web.poecdn.com' || (u.hostname === 'poe.how' && u.pathname.startsWith('/strategy/'))) { file = path.join('icons', path.basename(u.pathname)); type = 'image/png'; }
   else return new Response('unexpected request', { status: 403 });
-  file = path.join(F, file);
+  // Optional: EXILE_DECK_ICONS names a folder of real icons (not in this repository) for the listing images.
+  const real = type === 'image/png' && process.env.EXILE_DECK_ICONS && path.join(process.env.EXILE_DECK_ICONS, path.basename(file));
+  file = real && fs.existsSync(real) ? real : path.join(F, file);
   if (!fs.existsSync(file)) return new Response('{"items":[]}', { status: 200, headers: { 'content-type': 'application/json', etag: '"empty"' } });
   const etag = '"' + fs.statSync(file).size + '"';
   if (h['If-None-Match'] === etag) return new Response(null, { status: 304, headers: { etag } });

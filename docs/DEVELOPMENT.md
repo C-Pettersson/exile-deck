@@ -19,6 +19,8 @@ Node 20 or later. The plugin runs on the Node 20 runtime that ships with Stream 
 - `npm test`: unit tests and an end-to-end run against a fake Stream Deck with sample data.
 - `npm run render -- gem`: writes both deck pages to `tools/out/`. Needs Edge or Chrome (`BROWSER_PATH` overrides).
 - `npm run assets` and `npm run listing`: regenerate plugin icons and Marketplace images.
+- `EXILE_DECK_ICONS=<folder>` with `npm run render` and `npm run listing` uses real icons from a local folder. Do not add
+  game icons to this repository.
 - `npm run validate` and `npm run pack`: Elgato's CLI. The package lands in `dist/`.
 
 ## Install a development build

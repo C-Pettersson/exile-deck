@@ -1,6 +1,8 @@
 'use strict';
-// Marketplace images -> docs/marketplace/. Uses sample data and drawn placeholder art only (no game artwork).
+// Marketplace images -> docs/marketplace/. Uses sample data. Game icons come from the folder in EXILE_DECK_ICONS,
+// which is not part of this repository; without it the drawn placeholder icons are used.
 // Run `node tools/render.js` first: the deck pages come from its output.
+const fs = require('fs');
 const path = require('path');
 const { renderPngs } = require('./browser');
 const { deck, size } = require('./sheet');
@@ -27,6 +29,8 @@ const fullDeck = (p) => {
   return deck({ ...o, x: (W - size(o).w) / 2, y: 250 });
 };
 
+const mageblood = process.env.EXILE_DECK_ICONS && path.join(process.env.EXILE_DECK_ICONS, 'Mageblood.png');
+const beltIcon = mageblood && fs.existsSync(mageblood) ? 'data:image/png;base64,' + fs.readFileSync(mageblood).toString('base64') : null;
 const jobs = [];
 const add = (svg, width, height, name) => jobs.push({ svg, width, height, file: path.join(OUT, name) });
 
@@ -35,7 +39,7 @@ add(page(icon(120, 230, 220) + text(120, 570, 'Exile Deck', 104) + text(120, 640
   text(120, 696, 'on your Stream Deck', 42, '#d6b56d') + deck({ cols: 5, rows: 3, key: 176, gap: 24, x: 860, y: 192 })), W, H, 'thumbnail.png');
 add(gallery('Live prices at a glance', 'Currency, uniques and divination cards with 7-day trends', fullDeck(0)), W, H, 'gallery-1-prices.png');
 add(gallery('Know which boss pays', 'Cost, loot and profit per run, ranked for the current league', fullDeck(1)), W, H, 'gallery-2-bosses.png');
-const result = R.checkResult({ name: 'Mageblood', variant: '4 Flasks', icon: null, chaos: 43464, divPrice: 197.7, type: 'UniqueAccessory' });
+const result = R.checkResult({ name: 'Mageblood', variant: '4 Flasks', icon: beltIcon, chaos: 43464, divPrice: 197.7, type: 'UniqueAccessory' });
 const steps = [['1. Hover an item', R.checkIdle()], ['2. Press the key', R.checkBusy()], ['3. See its price', result]];
 add(gallery('One-press price check', 'Works while the game window is active. One press, one action.',
   steps.map(([t, svg], i) => single(svg, 210 + i * 540, 330, 420) + text(420 + i * 540, 840, t, 40, '#f3ead8', 'text-anchor="middle"')).join('')), W, H, 'gallery-3-price-check.png');

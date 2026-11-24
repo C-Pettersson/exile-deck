@@ -85,6 +85,8 @@ For more information, refer to [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).
 
 ## Licence
 
-The licence is [MIT](LICENSE). Path of Exile is a trademark of Grinding Gear Games.
+The licence of the code is [MIT](LICENSE). Path of Exile is a trademark of Grinding Gear Games. The item icons in the
+images in `docs/marketplace/` are the property of Grinding Gear Games. The boss images come from poe.how. The MIT licence
+does not include these icons and images.
 
 This repository contains only the plugin. The poe.how service is a different project and is not part of this repository.

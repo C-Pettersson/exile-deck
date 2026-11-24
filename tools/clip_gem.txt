@@ -1,0 +1,16 @@
+Item Class: Support Gems
+Rarity: Gem
+Awakened Empower Support
+--------
+Support, Awakened
+Level: 4
+Cost & Reservation Multiplier: 125%
+Quality: +20% (augmented)
+--------
+Requirements:
+Level: 80
+Str: 155
+--------
+Supports any skill gem.
+--------
+Place into an item socket of the right colour to gain this skill.

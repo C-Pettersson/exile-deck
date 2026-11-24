@@ -1,0 +1,170 @@
+{
+ "type": "UniqueAccessory",
+ "league": "Covens",
+ "unit": "chaos",
+ "divinePrice": 197.7,
+ "updatedAt": "2026-11-24T20:30:00Z",
+ "items": [
+  {
+   "id": "mageblood-5-flasks-heavy-belt",
+   "name": "Mageblood",
+   "baseType": "Heavy Belt",
+   "variant": "5 Flasks",
+   "value": 386616,
+   "change7d": 0,
+   "spark": [
+    0,
+    1.99,
+    -0.01,
+    -2.81,
+    -1.47,
+    -1.55,
+    -1.75
+   ],
+   "volume": null,
+   "count": 1,
+   "icon": "https://web.poecdn.com/gen/image/FAKE/Mageblood.png",
+   "links": null,
+   "gemLevel": null,
+   "gemQuality": null,
+   "corrupted": false,
+   "mapTier": null,
+   "mods": [
+    "+(30-60) to Dexterity",
+    "+(15-30)% to Fire Resistance",
+    "+(15-30)% to Cold Resistance",
+    "Magic Utility Flasks cannot be Used",
+    "Leftmost 5 Magic Utility Flasks constantly apply their Flask Effects to you",
+    "Magic Utility Flask Effects cannot be removed"
+   ]
+  },
+  {
+   "id": "mageblood-4-flasks-heavy-belt",
+   "name": "Mageblood",
+   "baseType": "Heavy Belt",
+   "variant": "4 Flasks",
+   "value": 43464,
+   "change7d": -0.21,
+   "spark": [
+    0,
+    -1.67,
+    2.2,
+    -2.28,
+    -2.86,
+    2.46,
+    0.22
+   ],
+   "volume": null,
+   "count": 240,
+   "icon": "https://web.poecdn.com/gen/image/FAKE/Mageblood.png",
+   "links": null,
+   "gemLevel": null,
+   "gemQuality": null,
+   "corrupted": false,
+   "mapTier": null,
+   "mods": [
+    "+(30-60) to Dexterity",
+    "+(15-30)% to Fire Resistance",
+    "+(15-30)% to Cold Resistance",
+    "Magic Utility Flasks cannot be Used",
+    "Leftmost 4 Magic Utility Flasks constantly apply their Flask Effects to you",
+    "Magic Utility Flask Effects cannot be removed"
+   ]
+  },
+  {
+   "id": "mageblood-3-flasks-heavy-belt",
+   "name": "Mageblood",
+   "baseType": "Heavy Belt",
+   "variant": "3 Flasks",
+   "value": 32888,
+   "change7d": 15.16,
+   "spark": [
+    0,
+    8.83,
+    3.01,
+    11.94,
+    10.75,
+    14.78,
+    16.32
+   ],
+   "volume": null,
+   "count": 74,
+   "icon": "https://web.poecdn.com/gen/image/FAKE/Mageblood.png",
+   "links": null,
+   "gemLevel": null,
+   "gemQuality": null,
+   "corrupted": false,
+   "mapTier": null,
+   "mods": [
+    "+(30-60) to Dexterity",
+    "+(15-30)% to Fire Resistance",
+    "+(15-30)% to Cold Resistance",
+    "Magic Utility Flasks cannot be Used",
+    "Leftmost 3 Magic Utility Flasks constantly apply their Flask Effects to you",
+    "Magic Utility Flask Effects cannot be removed"
+   ]
+  },
+  {
+   "id": "mageblood-2-flasks-heavy-belt",
+   "name": "Mageblood",
+   "baseType": "Heavy Belt",
+   "variant": "2 Flasks",
+   "value": 15303,
+   "change7d": 0.51,
+   "spark": [
+    0,
+    0.04,
+    -2.4,
+    -1.59,
+    2.63,
+    2.86,
+    3.09
+   ],
+   "volume": null,
+   "count": 68,
+   "icon": "https://web.poecdn.com/gen/image/FAKE/Mageblood.png",
+   "links": null,
+   "gemLevel": null,
+   "gemQuality": null,
+   "corrupted": false,
+   "mapTier": null,
+   "mods": [
+    "+(30-60) to Dexterity",
+    "+(15-30)% to Fire Resistance",
+    "+(15-30)% to Cold Resistance",
+    "Magic Utility Flasks cannot be Used",
+    "Leftmost 2 Magic Utility Flasks constantly apply their Flask Effects to you",
+    "Magic Utility Flask Effects cannot be removed"
+   ]
+  },
+  {
+   "id": "headhunter-leather-belt",
+   "name": "Headhunter",
+   "baseType": "Leather Belt",
+   "variant": null,
+   "value": 47086,
+   "change7d": 35.57,
+   "spark": [
+    0,
+    24.67,
+    56.12,
+    71.1,
+    66.36,
+    48.9,
+    35.57
+   ],
+   "volume": null,
+   "count": 134,
+   "icon": "https://web.poecdn.com/gen/image/FAKE/Headhunter.png",
+   "links": null,
+   "gemLevel": null,
+   "gemQuality": null,
+   "corrupted": false,
+   "mapTier": null,
+   "mods": [
+    "+(40-66) to Strength",
+    "When you Kill a Rare monster, you gain its Modifiers for 60 seconds"
+   ]
+  }
+ ]
+}

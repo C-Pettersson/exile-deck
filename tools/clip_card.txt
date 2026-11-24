@@ -1,0 +1,7 @@
+Item Class: Divination Cards
+Rarity: Divination Card
+The Apothecary
+--------
+Stack Size: 2/5
+--------
+Mageblood

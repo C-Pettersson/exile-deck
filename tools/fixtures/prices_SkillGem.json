@@ -1,0 +1,81 @@
+{
+ "type": "SkillGem",
+ "league": "Covens",
+ "unit": "chaos",
+ "divinePrice": 197.7,
+ "updatedAt": "2026-11-24T20:30:00Z",
+ "items": [
+  {
+   "id": "awakened-empower-support-5c",
+   "name": "Awakened Empower Support",
+   "baseType": null,
+   "variant": "5c",
+   "value": 37850,
+   "change7d": 4.52,
+   "spark": [
+    null,
+    0,
+    13.16,
+    1.14,
+    -1.84,
+    0.41,
+    4.52
+   ],
+   "volume": null,
+   "count": 11,
+   "icon": "https://web.poecdn.com/gen/image/FAKE/Empower.png",
+   "links": null,
+   "gemLevel": 5,
+   "gemQuality": null,
+   "corrupted": true,
+   "mapTier": null,
+   "mods": []
+  },
+  {
+   "id": "awakened-empower-support-1",
+   "name": "Awakened Empower Support",
+   "baseType": null,
+   "variant": "1",
+   "value": 5200,
+   "change7d": -2,
+   "spark": [
+    0,
+    1,
+    -1,
+    -2
+   ],
+   "volume": null,
+   "count": 40,
+   "icon": "https://web.poecdn.com/gen/image/FAKE/Empower.png",
+   "links": null,
+   "gemLevel": 1,
+   "gemQuality": null,
+   "corrupted": false,
+   "mapTier": null,
+   "mods": []
+  },
+  {
+   "id": "awakened-empower-support-4-20",
+   "name": "Awakened Empower Support",
+   "baseType": null,
+   "variant": "4/20",
+   "value": 16800,
+   "change7d": 3,
+   "spark": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "volume": null,
+   "count": 9,
+   "icon": "https://web.poecdn.com/gen/image/FAKE/Empower.png",
+   "links": null,
+   "gemLevel": 4,
+   "gemQuality": 20,
+   "corrupted": false,
+   "mapTier": null,
+   "mods": []
+  }
+ ]
+}

@@ -1,0 +1,49 @@
+{
+ "game": "poe1",
+ "leagues": [
+  {
+   "id": "Covens",
+   "name": "Covens",
+   "start": "2026-11-13T19:00:00Z",
+   "end": null,
+   "hardcore": false,
+   "ssf": false,
+   "ruthless": false,
+   "current": true
+  },
+  {
+   "id": "Hardcore Covens",
+   "name": "Hardcore Covens",
+   "start": "2026-11-13T19:00:00Z",
+   "end": null,
+   "hardcore": true,
+   "ssf": false,
+   "ruthless": false,
+   "current": false
+  },
+  {
+   "id": "Standard",
+   "name": "Standard",
+   "start": "2013-01-23T21:00:00Z",
+   "end": null,
+   "hardcore": false,
+   "ssf": false,
+   "ruthless": false,
+   "current": false
+  },
+  {
+   "id": "Hardcore",
+   "name": "Hardcore",
+   "start": "2013-01-23T21:00:00Z",
+   "end": null,
+   "hardcore": true,
+   "ssf": false,
+   "ruthless": false,
+   "current": false
+  }
+ ],
+ "currentLeague": "Covens",
+ "unit": "chaos",
+ "divinePrice": 197.7,
+ "updatedAt": "2026-11-24T20:30:00Z"
+}

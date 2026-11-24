@@ -1,0 +1,16 @@
+{
+  "name": "exile-deck",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Stream Deck plugin for Path of Exile",
+  "license": "MIT",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "test": "node --test test/plugin.test.js",
+    "render": "node tools/render.js",
+    "assets": "node tools/make_assets.js",
+    "listing": "node tools/make_listing.js",
+    "validate": "npx --yes @elgato/cli@1.10.5 validate plugin/com.poehow.exile-deck.sdPlugin",
+    "pack": "npx --yes @elgato/cli@1.10.5 pack plugin/com.poehow.exile-deck.sdPlugin --output dist --force"
+  }
+}

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Exile Deck</title>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 8px 10px 12px; background: #2d2d2d; color: #d8d8d8; font: 12px/1.35 "Segoe UI", system-ui, sans-serif; }
+  .row { display: flex; align-items: center; margin: 6px 0; gap: 8px; }
+  .row > label { flex: 0 0 92px; text-align: right; color: #9a9a9a; }
+  .row > .ctl { flex: 1; min-width: 0; }
+  input, select { width: 100%; background: #3d3d3d; color: #e6e6e6; border: 1px solid #4a4a4a; border-radius: 3px; padding: 4px 6px; font: inherit; }
+  button { background: #3d3d3d; color: #e6e6e6; border: 1px solid #4a4a4a; border-radius: 3px; padding: 4px 10px; font: inherit; cursor: pointer; }
+  input:focus, select:focus { outline: none; border-color: #c8a96a; }
+  .note { margin: 8px 0 0 100px; color: #8d8d8d; font-size: 11px; }
+  .note b { color: #c8a96a; font-weight: 600; }
+  h3 { margin: 4px 0 8px 100px; font-size: 12px; color: #c8a96a; font-weight: 600; letter-spacing: .02em; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+'use strict';
+let ws, piUUID, actionInfo, settings = {}, globals = {}, meta = null;
+const kind = () => String(actionInfo.action).replace('com.poehow.exile-deck.', '');
+const $ = (h) => { const t = document.createElement('template'); t.innerHTML = h.trim(); return t.content.firstChild; };
+const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+function send(o) { if (ws && ws.readyState === 1) ws.send(JSON.stringify(o)); }
+function save() { send({ event: 'setSettings', context: piUUID, payload: settings }); }
+function saveGlobals() { send({ event: 'setGlobalSettings', context: piUUID, payload: globals }); }
+function toPlugin(payload) { send({ event: 'sendToPlugin', action: actionInfo.action, context: piUUID, payload }); }
+
+function row(label, ctl) { return `<div class="row"><label>${label}</label><div class="ctl">${ctl}</div></div>`; }
+function text(id, val, ph = '', list = '') { return `<input id="${id}" value="${esc(val)}" placeholder="${esc(ph)}" ${list ? `list="${list}"` : ''} autocomplete="off">`; }
+function select(id, opts, val) { return `<select id="${id}">${opts.map((o) => { const [v, l] = Array.isArray(o) ? o : [o, o]; return `<option value="${esc(v)}"${String(v) === String(val) ? ' selected' : ''}>${esc(l)}</option>`; }).join('')}</select>`; }
+
+function bind(id, key, { global = false, onChange } = {}) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const fire = () => {
+    const v = el.type === 'number' ? Number(el.value) : el.value;
+    if (global) { globals[key] = v; saveGlobals(); } else { settings[key] = v; save(); }
+    if (onChange) onChange(v);
+  };
+  el.addEventListener(el.tagName === 'SELECT' ? 'change' : 'change', fire);
+}
+
+const TYPES_FALLBACK = ['Currency', 'Fragment', 'DivinationCard', 'Scarab', 'Essence', 'Fossil', 'Oil', 'UniqueAccessory', 'UniqueArmour', 'UniqueWeapon', 'UniqueJewel', 'UniqueFlask', 'SkillGem'];
+const GLYPHS_FALLBACK = ['home', 'ship', 'paw', 'pick', 'skull', 'bell', 'tree', 'door', 'chart', 'sword', 'person', 'scales', 'book', 'db', 'anvil', 'scroll', 'link', 'chat'];
+
+function build() {
+  const app = document.getElementById('app');
+  const k = kind();
+  const types = meta ? [...meta.exchangeTypes, ...meta.itemTypes] : TYPES_FALLBACK;
+  const glyphs = meta ? meta.glyphs : GLYPHS_FALLBACK;
+  let h = '';
+  if (k === 'price') {
+    h += row('Category', select('type', types, settings.type || 'Currency'));
+    h += row('Item', text('name', settings.name || '', 'e.g. Divine Orb', 'names') + '<datalist id="names"></datalist>');
+    h += row('Variant', text('variant', settings.variant || '', 'optional, e.g. 4 Flasks or 20/20'));
+    h += '<div class="note"><b>Press</b>: 7-day chart &nbsp; <b>Hold</b>: open trade search</div>';
+  } else if (k === 'movers') {
+    h += row('Show', select('direction', [['up', 'Biggest risers'], ['down', 'Biggest fallers']], settings.direction || 'up'));
+    h += row('Category', select('type', meta ? meta.exchangeTypes : ['Currency', 'DivinationCard', 'Scarab', 'Fragment'], settings.type || 'Currency'));
+    h += row('Min volume (c)', `<input id="minVolume" type="number" min="0" step="1000" value="${esc(settings.minVolume == null ? 50000 : settings.minVolume)}">`);
+    h += '<div class="note">Top 5 by 7-day change. <b>Press</b>: next &nbsp; <b>Hold</b>: trade search</div>';
+  } else if (k === 'chat') {
+    h += row('Label', text('label', settings.label || '', 'Hideout'));
+    h += row('Command', text('command', settings.command || '', '/hideout'));
+    h += row('Icon', select('glyph', glyphs, settings.glyph || 'chat'));
+    h += '<div class="note">Sends one command to PoE chat, only when the game window is focused.</div>';
+  } else if (k === 'regex') {
+    const n = [...(settings.regex || '')].length;
+    h += row('Label', text('label', settings.label || '', 'e.g. Bad map mods'));
+    h += row('Regex', text('regex', settings.regex || '', 'paste a regex'));
+    h += row('Icon', select('glyph', glyphs, settings.glyph || 'magnifier'));
+    h += '<div class="row"><label></label><div class="ctl"><button id="poere">Open poe.re</button></div></div>';
+    h += `<div class="note">${n > 250 ? '<b>' + n + ' / 250 characters: too long for the search box.</b> ' : n + ' / 250 characters. '}<b>Press</b>: paste into the search box of the open stash or vendor &nbsp; <b>Hold</b>: copy. On an empty key, <b>hold</b> saves the regex you copied.</div>`;
+  } else if (k === 'link') {
+    h += row('Label', text('label', settings.label || '', 'poe.how'));
+    h += row('URL', text('url', settings.url || '', 'https://...'));
+    h += row('Icon', select('glyph', glyphs, settings.glyph || 'link'));
+    h += '<div class="note"><b>{league}</b> in the URL is replaced with the current league.</div>';
+  } else if (k === 'league') {
+    const ls = meta ? meta.leagues : [];
+    h += '<h3>League (applies to all keys)</h3>';
+    h += row('League', select('league', [['', 'Auto (current challenge league)'], ...ls.map((l) => [l, l])], globals.league || ''));
+    h += `<div class="note">Now using <b>${esc(meta ? meta.league : '…')}</b>. Press the key to open poe.how.</div>`;
+  } else if (k === 'boss') {
+    const mode = settings.mode || 'rank';
+    h += row('Show', select('mode', [['rank', 'Nth most profitable boss'], ['boss', 'A specific boss'], ['summary', 'Bossing summary']], mode));
+    if (mode === 'rank') h += row('Rank', `<input id="rank" type="number" min="1" max="50" step="1" value="${esc(settings.rank || 1)}">`);
+    if (mode === 'boss') h += row('Boss', text('boss', settings.boss || '', 'e.g. Uber Shaper', 'bosslist') + '<datalist id="bosslist"></datalist>');
+    h += '<div class="note">Data from <b>poe.how</b> (refreshed every 30 min). Ranking uses bosses with complete data and 100+ logged runs. <b>Press</b>: details &nbsp; <b>Hold</b>: open on poe.how. An amber dot means some loot prices are missing.</div>';
+  } else if (k === 'pricecheck') {
+    h += '<div class="note" style="margin-left:0">Hover an item in Path of Exile and press: the key copies it (Ctrl+C), looks it up and shows the price for 15 s. <b>Hold</b> to open a trade search for the last item. Works for currency, cards, fragments, scarabs, gems, maps and uniques.</div>';
+  }
+  app.innerHTML = h;
+  bind('type', 'type', { onChange: (v) => { requestNames(v); } });
+  bind('name', 'name');
+  bind('variant', 'variant');
+  bind('direction', 'direction');
+  bind('minVolume', 'minVolume');
+  bind('label', 'label');
+  bind('command', 'command');
+  bind('glyph', 'glyph');
+  bind('url', 'url');
+  bind('regex', 'regex', { onChange: () => build() });
+  const poere = document.getElementById('poere');
+  if (poere) poere.addEventListener('click', () => send({ event: 'openUrl', payload: { url: 'https://poe.re/' } }));
+  bind('league', 'league', { global: true });
+  bind('mode', 'mode', { onChange: () => build() });
+  bind('rank', 'rank');
+  bind('boss', 'boss');
+  if (k === 'boss' && (settings.mode || 'rank') === 'boss') toPlugin({ req: 'bosses' });
+  if (k === 'price') requestNames(settings.type || 'Currency');
+}
+
+function requestNames(type) { toPlugin({ req: 'names', type }); }
+
+function connectElgatoStreamDeckSocket(port, uuid, registerEvent, info, actionInfoJson) {
+  piUUID = uuid;
+  actionInfo = JSON.parse(actionInfoJson);
+  settings = (actionInfo.payload && actionInfo.payload.settings) || {};
+  ws = new WebSocket('ws://127.0.0.1:' + port);
+  ws.onopen = () => {
+    send({ event: registerEvent, uuid: piUUID });
+    send({ event: 'getGlobalSettings', context: piUUID });
+    toPlugin({ req: 'meta' });
+    build();
+  };
+  ws.onmessage = (e) => {
+    const m = JSON.parse(e.data);
+    if (m.event === 'didReceiveGlobalSettings') { globals = (m.payload && m.payload.settings) || {}; if (kind() === 'league') build(); }
+    else if (m.event === 'didReceiveSettings') { settings = (m.payload && m.payload.settings) || {}; if (kind() === 'regex') build(); }
+    else if (m.event === 'sendToPropertyInspector') {
+      const p = m.payload || {};
+      if (p.meta) { meta = p.meta; build(); }
+      if (p.bosses) { const dl = document.getElementById('bosslist'); if (dl) dl.innerHTML = p.bosses.map((n) => `<option value="${esc(n)}">`).join(''); }
+      if (p.names) { const dl = document.getElementById('names'); if (dl) dl.innerHTML = p.names.slice(0, 2000).map((n) => `<option value="${esc(n)}">`).join(''); }
+    }
+  };
+}
+window.connectElgatoStreamDeckSocket = connectElgatoStreamDeckSocket;
+</script>
+</body>
+</html>

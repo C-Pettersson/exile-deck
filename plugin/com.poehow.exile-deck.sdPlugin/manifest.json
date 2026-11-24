@@ -1,0 +1,157 @@
+{
+  "$schema": "https://schemas.elgato.com/streamdeck/plugins/manifest.json",
+  "Name": "Exile Deck",
+  "Version": "1.0.0.0",
+  "Author": "poeHow",
+  "Description": "Path of Exile companion: live economy prices, one-press price check of the hovered item, boss profits, chat commands and quick links. Not affiliated with or endorsed by Grinding Gear Games.",
+  "Category": "Exile Deck",
+  "CategoryIcon": "imgs/category",
+  "Icon": "imgs/plugin",
+  "URL": "https://poe.how/addons",
+  "CodePath": "bin/plugin.js",
+  "Nodejs": {
+    "Version": "20"
+  },
+  "PropertyInspectorPath": "pi/index.html",
+  "SDKVersion": 2,
+  "Software": {
+    "MinimumVersion": "6.6"
+  },
+  "OS": [
+    {
+      "Platform": "windows",
+      "MinimumVersion": "10"
+    }
+  ],
+  "UUID": "com.poehow.exile-deck",
+  "Actions": [
+    {
+      "UUID": "com.poehow.exile-deck.price",
+      "Name": "Price",
+      "Tooltip": "Live price of one item. Press: 7-day chart. Hold: trade search.",
+      "Icon": "imgs/actions/price",
+      "States": [
+        {
+          "Image": "imgs/keys/price",
+          "ShowTitle": false
+        }
+      ],
+      "Controllers": [
+        "Keypad"
+      ],
+      "SupportedInMultiActions": false
+    },
+    {
+      "UUID": "com.poehow.exile-deck.pricecheck",
+      "Name": "Price check",
+      "Tooltip": "Hover an item in game and press to price it. Hold: trade search.",
+      "Icon": "imgs/actions/pricecheck",
+      "States": [
+        {
+          "Image": "imgs/keys/pricecheck",
+          "ShowTitle": false
+        }
+      ],
+      "Controllers": [
+        "Keypad"
+      ],
+      "SupportedInMultiActions": false
+    },
+    {
+      "UUID": "com.poehow.exile-deck.movers",
+      "Name": "Market movers",
+      "Tooltip": "Biggest 7-day risers or fallers. Press: next.",
+      "Icon": "imgs/actions/movers",
+      "States": [
+        {
+          "Image": "imgs/keys/movers",
+          "ShowTitle": false
+        }
+      ],
+      "Controllers": [
+        "Keypad"
+      ],
+      "SupportedInMultiActions": false
+    },
+    {
+      "UUID": "com.poehow.exile-deck.league",
+      "Name": "League",
+      "Tooltip": "Current league, league day and Divine price. Press: open poe.how.",
+      "Icon": "imgs/actions/league",
+      "States": [
+        {
+          "Image": "imgs/keys/league",
+          "ShowTitle": false
+        }
+      ],
+      "Controllers": [
+        "Keypad"
+      ],
+      "SupportedInMultiActions": false
+    },
+    {
+      "UUID": "com.poehow.exile-deck.chat",
+      "Name": "Chat command",
+      "Tooltip": "Sends one chat command (e.g. /hideout) into Path of Exile.",
+      "Icon": "imgs/actions/chat",
+      "States": [
+        {
+          "Image": "imgs/keys/chat",
+          "ShowTitle": false
+        }
+      ],
+      "Controllers": [
+        "Keypad"
+      ],
+      "SupportedInMultiActions": false
+    },
+    {
+      "UUID": "com.poehow.exile-deck.regex",
+      "Name": "Regex search",
+      "Tooltip": "Saves a search regex, for example from poe.re. Press: paste into the search box. Hold: copy, or save on an empty key.",
+      "Icon": "imgs/actions/regex",
+      "States": [
+        {
+          "Image": "imgs/keys/regex",
+          "ShowTitle": false
+        }
+      ],
+      "Controllers": [
+        "Keypad"
+      ],
+      "SupportedInMultiActions": false
+    },
+    {
+      "UUID": "com.poehow.exile-deck.link",
+      "Name": "PoE link",
+      "Tooltip": "Opens a website. {league} is replaced with the current league.",
+      "Icon": "imgs/actions/link",
+      "States": [
+        {
+          "Image": "imgs/keys/link",
+          "ShowTitle": false
+        }
+      ],
+      "Controllers": [
+        "Keypad"
+      ],
+      "SupportedInMultiActions": true
+    },
+    {
+      "UUID": "com.poehow.exile-deck.boss",
+      "Name": "Boss profit",
+      "Tooltip": "Boss profit per run (top-ranked or a fixed boss). Press: details. Hold: open on poe.how.",
+      "Icon": "imgs/actions/boss",
+      "States": [
+        {
+          "Image": "imgs/keys/boss",
+          "ShowTitle": false
+        }
+      ],
+      "Controllers": [
+        "Keypad"
+      ],
+      "SupportedInMultiActions": false
+    }
+  ]
+}

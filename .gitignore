@@ -1,0 +1,14 @@
+node_modules/
+dist/
+tools/out/
+*.streamDeckPlugin
+*.log
+.env*
+
+# Private: backend notes and local working files. Never commit these.
+/private/
+/docs/API.md
+/docs/NOTES.md
+/docs/RELEASE_PLAN.md
+/docs/marketplace/LISTING.md
+/.claude/

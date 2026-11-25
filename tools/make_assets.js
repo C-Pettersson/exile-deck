@@ -17,7 +17,8 @@ const G = {
 };
 const mono = (g, w = 5) => `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><g fill="none" stroke="#ffffff" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round">${g}</g></svg>`;
 for (const [k, g] of Object.entries(G)) both(mono(g), path.join(P, 'actions', k), 20);
-both(mono('<path d="M32 6 L50 20 L50 44 L32 58 L14 44 L14 20 Z"/><path d="M32 20 L40 32 L32 44 L24 32 Z"/>', 5), path.join(P, 'category'), 28);
+const CATEGORY = '<path d="M32 6 L50 20 L50 44 L32 58 L14 44 L14 20 Z"/><path d="M32 20 L40 32 L32 44 L24 32 Z"/>';
+both(mono(CATEGORY, 5), path.join(P, 'category'), 28);
 // Plugin icon (marketplace / plugin list)
 const { logo: plugin } = require('./logo');
 both(plugin, path.join(P, 'plugin'), 256);
@@ -30,5 +31,5 @@ both(R.glyphKey({ glyphName: 'chat', label: 'Chat', sub: '/hideout', accent: R.A
 both(R.glyphKey({ glyphName: 'magnifier', label: 'Regex', sub: 'saved search', accent: R.ACCENT.check }), path.join(P, 'keys', 'regex'), 72);
 both(R.glyphKey({ glyphName: 'link', label: 'Link', sub: 'website', accent: R.ACCENT.link }), path.join(P, 'keys', 'link'), 72);
 both(R.glyphKey({ glyphName: 'crown', label: 'Boss', sub: 'profit', accent: R.ACCENT.boss }), path.join(P, 'keys', 'boss'), 72);
-module.exports = { plugin };
+module.exports = { plugin, G, mono, CATEGORY };
 if (require.main === module) { renderPngs(jobs); console.log('assets ok', jobs.length); }

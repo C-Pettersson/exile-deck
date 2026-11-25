@@ -6,7 +6,7 @@ const fs = require('fs');
 const path = require('path');
 const { renderPngs } = require('./browser');
 const { deck, size } = require('./sheet');
-const { plugin } = require('./make_assets');
+const { plugin, G, mono, CATEGORY } = require('./make_assets');
 const R = require('../plugin/com.poehow.exile-deck.sdPlugin/bin/render.js');
 
 const OUT = path.join(__dirname, '..', 'docs', 'marketplace');
@@ -43,6 +43,29 @@ const result = R.checkResult({ name: 'Mageblood', variant: '4 Flasks', icon: bel
 const steps = [['1. Hover an item', R.checkIdle()], ['2. Press the key', R.checkBusy()], ['3. See its price', result]];
 add(gallery('One-press price check', 'Works while the game window is active. One press, one action.',
   steps.map(([t, svg], i) => single(svg, 210 + i * 540, 330, 420) + text(420 + i * 540, 840, t, 40, '#f3ead8', 'text-anchor="middle"')).join('')), W, H, 'gallery-3-price-check.png');
+
+// The action list as it appears in the Stream Deck app, with what each key does.
+const manifest = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'plugin', 'com.poehow.exile-deck.sdPlugin', 'manifest.json'), 'utf8'));
+const WHAT = {
+  price: 'Live price and 7-day trend of one item', pricecheck: 'Price of the item under your cursor', movers: 'Biggest risers and fallers',
+  league: 'League, league day and Divine Orb price', chat: 'Send one chat command, such as /hideout', regex: 'Paste a saved search into the search box',
+  link: 'Open a website for the current league', boss: 'Cost, loot and profit per boss run',
+};
+const kindOf = (a) => a.UUID.slice(manifest.UUID.length + 1);
+const missing = manifest.Actions.filter((a) => !WHAT[kindOf(a)] || !G[kindOf(a)]);
+if (missing.length) throw new Error('No listing text or icon for ' + missing.map((a) => a.UUID).join(', '));
+const X = 120;
+const TOP = 220;
+const ROW = 76;
+const listIcon = (g, x, y, s) => `<image x="${x}" y="${y}" width="${s}" height="${s}" href="${uri(mono(g))}"/>`;
+let list = `<rect x="${X}" y="${TOP}" width="1680" height="${86 + manifest.Actions.length * ROW}" rx="14" fill="#1f1f1f"/>` +
+  `<path d="M${X} ${TOP + 86} V${TOP + 14} Q${X} ${TOP} ${X + 14} ${TOP} H${X + 1666} Q${X + 1680} ${TOP} ${X + 1680} ${TOP + 14} V${TOP + 86} Z" fill="#2d2d2d"/>` +
+  listIcon(CATEGORY, X + 36, TOP + 19, 48) + text(X + 112, TOP + 56, manifest.Name, 36, '#ffffff');
+manifest.Actions.forEach((a, i) => {
+  const y = TOP + 86 + i * ROW;
+  list += listIcon(G[kindOf(a)], X + 40, y + 18, 40) + text(X + 112, y + 49, a.Name, 32, '#e6e6e6') + text(X + 560, y + 48, WHAT[kindOf(a)], 28, '#9d9d9d');
+});
+add(gallery('Build your own layout', `${manifest.Actions.length} kinds of keys to drag onto your Stream Deck`, list), W, H, 'gallery-4-keys.png');
 
 renderPngs(jobs);
 console.log('listing images ok', jobs.length);

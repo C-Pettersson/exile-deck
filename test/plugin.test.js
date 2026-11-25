@@ -34,6 +34,9 @@ function serveFixtures() {
 test('manifest: IDs, version and image files', () => {
   assert.equal(manifest.UUID, 'com.poehow.exile-deck');
   assert.equal(manifest.Version, VERSION + '.0');
+  // Maker Console refuses anything lower. They also turn on DRM, which makes the plugin folder read-only.
+  assert.equal(manifest.SDKVersion, 3);
+  assert.equal(manifest.Software.MinimumVersion, '6.9');
   const images = [[manifest.Icon, true], [manifest.CategoryIcon]];
   for (const a of manifest.Actions) {
     assert.ok(a.UUID.startsWith(manifest.UUID + '.'), a.UUID);

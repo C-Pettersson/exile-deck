@@ -14,7 +14,7 @@ The image shows sample data.
 ## Requirements
 
 - Windows 10 or later
-- Stream Deck 6.6 or later
+- Stream Deck 6.9 or later
 - Path of Exile 1
 
 ## Keys

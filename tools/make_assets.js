@@ -19,12 +19,7 @@ const mono = (g, w = 5) => `<svg xmlns="http://www.w3.org/2000/svg" width="64" h
 for (const [k, g] of Object.entries(G)) both(mono(g), path.join(P, 'actions', k), 20);
 both(mono('<path d="M32 6 L50 20 L50 44 L32 58 L14 44 L14 20 Z"/><path d="M32 20 L40 32 L32 44 L24 32 Z"/>', 5), path.join(P, 'category'), 28);
 // Plugin icon (marketplace / plugin list)
-const plugin = `<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256"><defs>
-<linearGradient id="b" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a2318"/><stop offset="1" stop-color="#0b0a08"/></linearGradient>
-<radialGradient id="o" cx="112" cy="104" r="64" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fff8e1"/><stop offset="0.45" stop-color="#e8c873"/><stop offset="1" stop-color="#6b4f1d"/></radialGradient></defs>
-<rect width="256" height="256" rx="48" fill="url(#b)"/><rect x="8" y="8" width="240" height="240" rx="42" fill="none" stroke="#d6b56d" stroke-opacity=".6" stroke-width="6"/>
-<path d="M32 196 L84 160 L120 176 L172 120 L224 92" fill="none" stroke="#62d36f" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
-<circle cx="128" cy="104" r="58" fill="url(#o)"/><circle cx="108" cy="84" r="14" fill="#fff" fill-opacity=".8"/></svg>`;
+const { logo: plugin } = require('./logo');
 both(plugin, path.join(P, 'plugin'), 256);
 // Default key images
 both(R.glyphKey({ glyphName: 'chart', label: 'Price', sub: 'live', accent: R.ACCENT.Currency }), path.join(P, 'keys', 'price'), 72);

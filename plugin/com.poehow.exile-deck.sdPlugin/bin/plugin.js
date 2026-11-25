@@ -296,7 +296,6 @@ async function priceCheck(context) {
     k.last = e;
     log('price check', item.name, '->', e.name, e.variant || '', e.chaos);
     const icon = await api.icon(e.icon);
-    showOk(context);
     showTemporary(context, R.checkResult({
       name: e.name, variant: e.variant, icon, chaos: e.chaos, divPrice, stack: item.stack, type: found.type, isDivine: eq(e.name, 'Divine Orb'),
     }));

@@ -7,7 +7,7 @@ the price of an item in the game when you press one key. The data comes from [po
 
 The image shows sample data.
 
-**The plugin is not released yet.** The price and boss keys do not work until the poe.how data service is available.
+**The plugin is not on Elgato Marketplace yet.**
 
 *This product isn't affiliated with or endorsed by Grinding Gear Games in any way.*
 

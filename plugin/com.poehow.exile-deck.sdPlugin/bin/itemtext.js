@@ -29,8 +29,10 @@ function parseItem(text) {
     else if ((m = /^Rarity:\s*(.+)$/i.exec(l))) rarity = m[1];
     else names.push(l);
   }
-  if (!rarity) return null;
-  const all = lines.join('\n');
+  // Viscera have an item class but no rarity line.
+  if (!rarity && !/^viscera$/i.test(itemClass || '')) return null;
+  // Advanced descriptions put the roll range after a value: 47(35-50)% becomes 47%.
+  const all = lines.map((l) => l.replace(/(\d)\(-?[\d.]+--?[\d.]+\)/g, '$1')).join('\n');
   const grab = (re) => { const m = re.exec(all); return m ? m[1] : null; };
   const stack = parseNumber(grab(/^Stack Size:\s*([\d\s,. ]+?)\s*\//m));
   const gemLevel = parseNumber(grab(/^Level:\s*(\d+)/m));
@@ -122,10 +124,15 @@ function modRegex(text) {
   try { return new RegExp('^' + src + '$', 'im'); } catch (_) { return null; }
 }
 
-/** Viscera share a name and differ by one modifier, so a price only counts when that modifier is on the item. */
+/**
+ * Viscera share a name and differ by their modifier, so a price only counts when that modifier is on the item. Several
+ * modifiers are listed as one variant, joined with ' / '.
+ */
 function hasVariantMod(variant, raw) {
-  const src = String(variant).replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/#/g, '-?[\\d.,]+');
-  return new RegExp('^' + src + '(?: \\([a-z ]+\\))?$', 'im').test(raw);
+  return String(variant).split(' / ').every((mod) => {
+    const src = mod.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/#/g, '-?[\\d.,]+');
+    return new RegExp('^' + src + '(?: \\([a-z ]+\\))?$', 'im').test(raw);
+  });
 }
 
 function pickUnique(cands, item) {

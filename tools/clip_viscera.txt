@@ -1,0 +1,11 @@
+Item Class: Viscera
+Dessicated Head
+--------
+Head
+--------
+Item Level: 83
+--------
+{ Implicit Modifier }
+Raised Zombies deal 47(35-50)% increased Damage
+--------
+Take this to the Wickerman in a town or hideout to attach it.

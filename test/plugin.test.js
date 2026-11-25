@@ -189,10 +189,27 @@ test('price check: viscera only match with the modifier on the item', withFetch(
     { id: 'b', name: "Coven Queen's Crown", variant: '#% more Maximum Life', value: 1807, count: 371 },
   ];
   globalThis.fetch = async () => reply({ items });
-  const check = (mod) => priceItem(new DeckApi(tmp()), 'Covens', parseItem(`Item Class: Viscera\nRarity: Unique\nCoven Queen's Crown\n--------\n${mod}\n`));
+  const check = (mod) => priceItem(new DeckApi(tmp()), 'Covens', parseItem(`Item Class: Viscera\nCoven Queen's Crown\n--------\nCrown\n--------\n{ Implicit Modifier }\n${mod}\n`));
   assert.equal((await check('+1 to maximum number of Spectres')).entry.id, 'a');
   assert.equal((await check('12% more Maximum Life (implicit)')).entry.id, 'b');
+  assert.equal((await check('12(10-15)% more Maximum Life')).entry.id, 'b');
   assert.equal(await check('8% more Maximum Life and Mana'), null);
+}));
+
+test('price check: viscera text as the game copies it', withFetch(async () => {
+  const items = [
+    { id: 'greater', name: 'Greater Dessicated Head', variant: '+# to maximum number of Raised Zombies', value: 1, count: 2 },
+    { id: 'head', name: 'Dessicated Head', variant: 'Raised Zombies deal #% increased Damage', value: 1, count: 3 },
+    { id: 'legs', name: 'Two Legs', variant: '#% reduced bonuses gained from Equipped Boots / #% increased bonuses gained from Equipped Gloves', value: 9, count: 1 },
+  ];
+  globalThis.fetch = async () => reply({ items });
+  const check = (text) => priceItem(new DeckApi(tmp()), 'Covens', parseItem(text));
+  assert.equal((await check(fs.readFileSync(path.join(ROOT, 'tools', 'clip_viscera.txt'), 'utf8'))).entry.id, 'head');
+  const legs = 'Item Class: Viscera\nTwo Legs\n--------\n50(40-60)% reduced bonuses gained from Equipped Boots\n';
+  assert.equal(await check(legs), null);
+  assert.equal((await check(legs + '25(-10--30)% increased bonuses gained from Equipped Gloves\n')).entry.id, 'legs');
+  // Text without a rarity is still not an item in any other class.
+  assert.equal(parseItem('Item Class: Belts\nHeavy Belt\n'), null);
 }));
 
 test('regex: kept as is, never shortened', () => {

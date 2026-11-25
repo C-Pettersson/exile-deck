@@ -48,7 +48,7 @@ function bind(id, key, { global = false, onChange } = {}) {
   el.addEventListener(el.tagName === 'SELECT' ? 'change' : 'change', fire);
 }
 
-const TYPES_FALLBACK = ['Currency', 'Fragment', 'DivinationCard', 'Scarab', 'Essence', 'Fossil', 'Oil', 'UniqueAccessory', 'UniqueArmour', 'UniqueWeapon', 'UniqueJewel', 'UniqueFlask', 'SkillGem'];
+const TYPES_FALLBACK = ['Currency', 'Fragment', 'DivinationCard', 'Thread', 'Scarab', 'Essence', 'Fossil', 'Oil', 'UniqueAccessory', 'UniqueArmour', 'UniqueWeapon', 'UniqueJewel', 'UniqueFlask', 'SkillGem'];
 const GLYPHS_FALLBACK = ['home', 'ship', 'paw', 'pick', 'skull', 'bell', 'tree', 'door', 'chart', 'sword', 'person', 'scales', 'book', 'db', 'anvil', 'scroll', 'link', 'chat'];
 
 function build() {
@@ -64,7 +64,7 @@ function build() {
     h += '<div class="note"><b>Press</b>: 7-day chart &nbsp; <b>Hold</b>: open trade search</div>';
   } else if (k === 'movers') {
     h += row('Show', select('direction', [['up', 'Biggest risers'], ['down', 'Biggest fallers']], settings.direction || 'up'));
-    h += row('Category', select('type', meta ? meta.exchangeTypes : ['Currency', 'DivinationCard', 'Scarab', 'Fragment'], settings.type || 'Currency'));
+    h += row('Category', select('type', meta ? meta.exchangeTypes : ['Currency', 'DivinationCard', 'Thread', 'Scarab', 'Fragment'], settings.type || 'Currency'));
     h += row('Min volume (c)', `<input id="minVolume" type="number" min="0" step="1000" value="${esc(settings.minVolume == null ? 50000 : settings.minVolume)}">`);
     h += '<div class="note">Top 5 by 7-day change. <b>Press</b>: next &nbsp; <b>Hold</b>: trade search</div>';
   } else if (k === 'chat') {
@@ -96,7 +96,7 @@ function build() {
     if (mode === 'boss') h += row('Boss', text('boss', settings.boss || '', 'e.g. Uber Shaper', 'bosslist') + '<datalist id="bosslist"></datalist>');
     h += '<div class="note">Data from <b>poe.how</b> (refreshed every 30 min). Ranking uses bosses with complete data and 100+ logged runs. <b>Press</b>: details &nbsp; <b>Hold</b>: open on poe.how. An amber dot means some loot prices are missing.</div>';
   } else if (k === 'pricecheck') {
-    h += '<div class="note" style="margin-left:0">Hover an item in Path of Exile and press: the key copies it (Ctrl+C), looks it up and shows the price for 15 s. <b>Hold</b> to open a trade search for the last item. Works for currency, cards, fragments, scarabs, gems, maps and uniques.</div>';
+    h += '<div class="note" style="margin-left:0">Hover an item in Path of Exile and press: the key copies it (Ctrl+C), looks it up and shows the price for 15 s. <b>Hold</b> to open a trade search for the last item. Works for currency, cards, fragments, threads, scarabs, gems, maps and uniques.</div>';
   }
   app.innerHTML = h;
   bind('type', 'type', { onChange: (v) => { requestNames(v); } });

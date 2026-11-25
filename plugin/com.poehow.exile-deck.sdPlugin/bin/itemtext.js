@@ -67,6 +67,9 @@ function guessExchangeOrder(name) {
   if (/allflame|ember/.test(n)) add('AllflameEmber');
   if (/runegraft/.test(n)) add('Runegraft');
   if (/astrolabe/.test(n)) add('Astrolabe');
+  if (/\bthread\b/.test(n)) add('Thread');
+  if (/enshrouding crystal/.test(n)) add('EnshroudingCrystal');
+  if (/\bducat\b/.test(n)) add('Ducat');
   if (/coin/.test(n)) add('DjinnCoin');
   if (/splinter|fragment|emblem|key|crest|invitation|offering|sacrifice|mortal|reliquary|breachstone|simulacrum/.test(n)) add('Fragment');
   add('Currency');
@@ -87,6 +90,7 @@ function candidateTypes(item) {
     if (/^blighted /i.test(item.name || '') || /blighted/i.test(item.base || '')) return ['BlightedMap', 'Map'];
     return ['Map', 'ValdoMap'];
   }
+  if (/viscera/.test(c)) return ['Viscera'];
   if (r === 'Unique') {
     if (/jewel/.test(c)) return ['UniqueJewel', 'ForbiddenJewel', 'ClusterJewel'];
     if (/flask/.test(c)) return ['UniqueFlask'];
@@ -104,7 +108,11 @@ function candidateTypes(item) {
   if (/wombgift/.test(c)) return ['Wombgift'];
   if (/vial/.test(norm(item.name))) return ['Vial'];
   if (/captured beast|beast/.test(c)) return ['Beast'];
-  if (/map fragment|misc map item|fragment/.test(c)) return ['Fragment', 'Scarab', 'Invitation', 'Memory', ...guessExchangeOrder(item.name)];
+  if (/map fragment|misc map item|fragment/.test(c)) {
+    const order = guessExchangeOrder(item.name);
+    // A name that gives its category away is looked up there first.
+    return [...(order[0] === 'Currency' ? [] : [order[0]]), 'Fragment', 'Scarab', 'Invitation', 'Memory', ...order];
+  }
   return guessExchangeOrder(item.name);
 }
 
@@ -112,6 +120,12 @@ function modRegex(text) {
   const src = String(text).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
     .replace(/\\\(\s*-?[\d.]+\s*-\s*-?[\d.]+\s*\\\)/g, '[-+]?[\\d.]+');
   try { return new RegExp('^' + src + '$', 'im'); } catch (_) { return null; }
+}
+
+/** Viscera share a name and differ by one modifier, so a price only counts when that modifier is on the item. */
+function hasVariantMod(variant, raw) {
+  const src = String(variant).replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/#/g, '-?[\\d.,]+');
+  return new RegExp('^' + src + '(?: \\([a-z ]+\\))?$', 'im').test(raw);
 }
 
 function pickUnique(cands, item) {
@@ -169,7 +183,8 @@ function matchLines(lines, item, type) {
     }
     return pickUnique(c, item);
   }
-  const c = lines.filter((x) => eq(x.name, item.name));
+  let c = lines.filter((x) => eq(x.name, item.name));
+  if (type === 'Viscera') c = c.filter((x) => !x.variant || hasVariantMod(x.variant, item.raw));
   return c.sort((a, b) => (b.count || 0) - (a.count || 0))[0] || null;
 }
 

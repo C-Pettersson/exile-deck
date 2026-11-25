@@ -9,7 +9,7 @@ const { execFileSync } = require('node:child_process');
 const ROOT = path.join(__dirname, '..');
 const PLUGIN = path.join(ROOT, 'plugin', 'com.poehow.exile-deck.sdPlugin');
 const manifest = JSON.parse(fs.readFileSync(path.join(PLUGIN, 'manifest.json'), 'utf8'));
-const { DeckApi, tradeLeague, safeIcon, safePage } = require(path.join(PLUGIN, 'bin', 'api.js'));
+const { DeckApi, tradeLeague, activeLeague, EXCHANGE_TYPES, safeIcon, safePage } = require(path.join(PLUGIN, 'bin', 'api.js'));
 const { parseItem, priceItem } = require(path.join(PLUGIN, 'bin', 'itemtext.js'));
 const { cleanRegex, regexProblem } = require(path.join(PLUGIN, 'bin', 'regex.js'));
 const { VERSION } = require(path.join(PLUGIN, 'bin', 'version.js'));
@@ -93,6 +93,42 @@ test('leagues: SSF uses its trade league and Ruthless is not offered', withFetch
   assert.equal(tradeLeague('SSF Nowhere', await api.leagues()), 'SSF Nowhere');
 }));
 
+const league = (id, flags = {}) => ({ id, hardcore: false, ssf: false, ruthless: false, current: false, ...flags });
+const LIVE_LEAGUES = [
+  league('Standard'), league('Hardcore', { hardcore: true }), league('Solo Self-Found', { ssf: true }),
+  league('Hardcore SSF', { hardcore: true, ssf: true }),
+  league('Covens', { current: true }), league('Hardcore Covens', { current: true, hardcore: true }),
+  league('SSF Covens', { current: true, ssf: true }), league('HC SSF Covens', { current: true, hardcore: true, ssf: true }),
+  league('Ruthless Covens', { current: true, ruthless: true }),
+];
+
+test('leagues: the permanent solo leagues use Standard and Hardcore prices', () => {
+  for (const [chosen, priced] of [['Solo Self-Found', 'Standard'], ['Hardcore SSF', 'Hardcore'], ['SSF Covens', 'Covens'], ['HC SSF Covens', 'Hardcore Covens'], ['Standard', 'Standard'], ['Hardcore', 'Hardcore']]) {
+    assert.equal(tradeLeague(chosen, LIVE_LEAGUES), priced);
+  }
+});
+
+test('leagues: an ended league falls back to the current one in the same mode', withFetch(async () => {
+  const active = (id) => activeLeague(id, LIVE_LEAGUES, 'Covens');
+  for (const [chosen, used] of [['Mirage', 'Covens'], ['Hardcore Mirage', 'Hardcore Covens'], ['SSF Mirage', 'SSF Covens'], ['HC SSF Mirage', 'HC SSF Covens'], ['Ruthless Covens', 'Covens']]) {
+    assert.equal(active(chosen), used);
+  }
+  for (const id of ['Standard', 'Solo Self-Found', 'Hardcore Covens', 'SSF Standard', 'HC SSF Covens']) assert.equal(active(id), id);
+  // Between leagues there is no current one: use what the API names. Without a list, keep the choice.
+  assert.equal(activeLeague('Hardcore Mirage', LIVE_LEAGUES.filter((l) => !l.current), 'Standard'), 'Standard');
+  assert.equal(activeLeague('Mirage', [], undefined), 'Mirage');
+
+  globalThis.fetch = async () => reply({ leagues: LIVE_LEAGUES, currentLeague: 'Covens' });
+  const api = new DeckApi(tmp());
+  api.leagueOverride = 'HC SSF Mirage';
+  assert.equal(await api.selectedLeague(), 'HC SSF Covens');
+  assert.equal(await api.league(), 'Hardcore Covens');
+  globalThis.fetch = async () => { throw new Error('offline'); };
+  const offline = new DeckApi(tmp());
+  offline.leagueOverride = 'Mirage';
+  assert.equal(await offline.league(), 'Mirage');
+}));
+
 test('bosses: unknown values stay unknown instead of becoming zero', withFetch(async () => {
   globalThis.fetch = async () => reply({ items: [{ id: 1, title: 'Test Boss', cost: null, ev: 5, profit: null, runs: 500, completeness: 'complete', realData: true }] });
   const [boss] = await new DeckApi(tmp()).bosses('Covens');
@@ -126,6 +162,37 @@ test('price check: matches clipboard text to the right entry', withFetch(async (
   assert.equal((await check('clip_gem.txt')).name, 'Awakened Empower Support');
   assert.equal((await check('clip_card.txt')).type, 'DivinationCard');
   assert.equal(parseItem('hello'), null);
+}));
+
+test('price check: threads, crystals and ducats are looked up in their own category first', withFetch(async () => {
+  const names = { Thread: 'Abyss Thread', EnshroudingCrystal: 'Afarud Enshrouding Crystal', Ducat: "Merrick's Ducat" };
+  const seen = [];
+  globalThis.fetch = async (url) => {
+    const type = new URL(url).searchParams.get('type');
+    seen.push(type);
+    return reply({ items: names[type] ? [{ id: type, name: names[type], value: 5 }] : [] });
+  };
+  for (const [type, name] of Object.entries(names)) {
+    assert.ok(EXCHANGE_TYPES.includes(type));
+    for (const itemClass of ['Map Fragments', 'Stackable Currency']) {
+      seen.length = 0;
+      const hit = await priceItem(new DeckApi(tmp()), 'Covens', parseItem(`Item Class: ${itemClass}\nRarity: Currency\n${name}\n--------\nStack Size: 1/10\n`));
+      assert.equal(hit.type, type);
+      assert.deepEqual(seen, [type]);
+    }
+  }
+}));
+
+test('price check: viscera only match with the modifier on the item', withFetch(async () => {
+  const items = [
+    { id: 'a', name: "Coven Queen's Crown", variant: '+# to maximum number of Spectres', value: 33411, count: 31 },
+    { id: 'b', name: "Coven Queen's Crown", variant: '#% more Maximum Life', value: 1807, count: 371 },
+  ];
+  globalThis.fetch = async () => reply({ items });
+  const check = (mod) => priceItem(new DeckApi(tmp()), 'Covens', parseItem(`Item Class: Viscera\nRarity: Unique\nCoven Queen's Crown\n--------\n${mod}\n`));
+  assert.equal((await check('+1 to maximum number of Spectres')).entry.id, 'a');
+  assert.equal((await check('12% more Maximum Life (implicit)')).entry.id, 'b');
+  assert.equal(await check('8% more Maximum Life and Mana'), null);
 }));
 
 test('regex: kept as is, never shortened', () => {

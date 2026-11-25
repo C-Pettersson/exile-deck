@@ -79,7 +79,7 @@ async function leagueCtx() {
 function tradeUrl(league, entry) {
   const q = { query: { status: { option: 'online' } }, sort: { price: 'asc' } };
   if (entry && entry.source === 'item' && /^Unique/.test(entry.type || '')) { q.query.name = entry.name; if (entry.baseType) q.query.type = entry.baseType; }
-  else if (entry) q.query.type = entry.baseType && entry.source === 'item' && /Map$/.test(entry.type) ? entry.baseType : entry.name;
+  else if (entry) q.query.type = entry.baseType && entry.source === 'item' && /Map$|^ScryingOrb$/.test(entry.type) ? entry.baseType : entry.name;
   return `https://www.pathofexile.com/trade/search/${encodeURIComponent(league)}?q=${encodeURIComponent(JSON.stringify(q))}`;
 }
 

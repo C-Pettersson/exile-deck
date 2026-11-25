@@ -13,11 +13,12 @@ const UA = `ExileDeck/${VERSION} (+${SITE}/addons)`;
 const ICON_HOSTS = new Set(['web.poecdn.com', 'poe.how']);
 
 const EXCHANGE_TYPES = ['Currency', 'Fragment', 'Runegraft', 'AllflameEmber', 'Tattoo', 'Omen', 'DjinnCoin',
-  'DivinationCard', 'Artifact', 'Oil', 'DeliriumOrb', 'Scarab', 'Astrolabe', 'Fossil', 'Resonator', 'Essence'];
+  'DivinationCard', 'Artifact', 'Oil', 'DeliriumOrb', 'Scarab', 'Astrolabe', 'Fossil', 'Resonator', 'Essence',
+  'Thread', 'EnshroudingCrystal', 'Ducat'];
 const ITEM_TYPES = ['Wombgift', 'Incubator', 'UniqueWeapon', 'UniqueArmour', 'UniqueAccessory', 'UniqueFlask',
   'UniqueJewel', 'ForbiddenJewel', 'ShrineBelt', 'UniqueTincture', 'UniqueRelic', 'SkillGem', 'ImbuedGem',
   'ClusterJewel', 'Map', 'BlightedMap', 'BlightRavagedMap', 'UniqueMap', 'ValdoMap', 'Invitation', 'Memory',
-  'IncursionTemple', 'BaseType', 'Beast', 'Vial'];
+  'IncursionTemple', 'BaseType', 'Beast', 'Vial', 'Viscera', 'ScryingOrb', 'Flask'];
 
 const TTL = { meta: 60 * 60e3, prices: 15 * 60e3, strategies: 30 * 60e3, icon: 30 * 86400e3 };
 const RETRY_AFTER_FAIL = 5 * 60e3;
@@ -39,14 +40,28 @@ function safePage(url, fallback) {
   return fallback;
 }
 
-const baseName = (id) => String(id).replace(/\b(SSF|HC|Hardcore)\b/gi, ' ').replace(/\s+/g, ' ').trim();
+const isSsfId = (id) => /\b(SSF|Solo Self-Found)\b/i.test(id);
+const isHardcoreId = (id) => /\b(HC|Hardcore)\b/i.test(id);
+/** Permanent leagues have no name of their own: Standard, Hardcore and Solo Self-Found all come down to ''. */
+const baseName = (id) => String(id).replace(/\b(SSF|HC|Hardcore|Standard|Solo Self-Found)\b/gi, ' ').replace(/\s+/g, ' ').trim();
 /** Solo leagues have no market: an SSF league uses the prices of its trade league. Other leagues map to themselves. */
 function tradeLeague(id, leagues) {
   const l = leagues.find((x) => x.id === id);
-  if (!(l ? l.ssf : /\bSSF\b/i.test(id))) return id;
-  const hc = l ? !!l.hardcore : /\b(HC|Hardcore)\b/i.test(id);
+  if (!(l ? l.ssf : isSsfId(id))) return id;
+  const hc = l ? !!l.hardcore : isHardcoreId(id);
   const hit = leagues.find((x) => !x.ssf && !x.ruthless && !!x.hardcore === hc && baseName(x.id) === baseName(id));
   return hit ? hit.id : id;
+}
+/**
+ * The chosen league while it can still be priced. Once it has ended, the current league in the same mode (hardcore,
+ * SSF) takes over, or else the current league. Without a league list the choice is kept.
+ */
+function activeLeague(id, leagues, currentLeague) {
+  if (!leagues.length) return id;
+  const l = leagues.find((x) => x.id === id);
+  if (l ? !l.ruthless : tradeLeague(id, leagues) !== id) return id;
+  const same = leagues.find((x) => x.current && !x.ruthless && !!x.hardcore === isHardcoreId(id) && !!x.ssf === isSsfId(id));
+  return same ? same.id : currentLeague || id;
 }
 
 class DeckApi {
@@ -150,8 +165,8 @@ class DeckApi {
   /** Leagues the user can choose: Ruthless has no prices of its own. */
   async choices() { return (await this.leagues()).filter((l) => !l.ruthless).map((l) => l.id); }
   async selectedLeague() {
-    if (this.leagueOverride) return this.leagueOverride;
     const m = await this.meta();
+    if (this.leagueOverride) return activeLeague(this.leagueOverride, await this.leagues(), m.currentLeague);
     if (m.currentLeague) return m.currentLeague;
     const cur = (await this.leagues()).find((l) => l.current);
     return cur ? cur.id : 'Standard';
@@ -280,4 +295,4 @@ class DeckApi {
   }
 }
 
-module.exports = { DeckApi, tradeLeague, EXCHANGE_TYPES, ITEM_TYPES, eq, norm, safeIcon, safePage, SITE, UA };
+module.exports = { DeckApi, tradeLeague, activeLeague, EXCHANGE_TYPES, ITEM_TYPES, eq, norm, safeIcon, safePage, SITE, UA };

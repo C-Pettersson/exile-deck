@@ -45,7 +45,7 @@ const DEFAULTS = {
   price: { type: 'Currency', name: 'Divine Orb', variant: '' },
   movers: { direction: 'up', type: 'Currency', minVolume: 50000 },
   chat: { command: '/hideout', label: 'Hideout', glyph: 'home' },
-  link: { url: SITE, label: 'poe.how', glyph: 'chart' },
+  link: { url: SITE, label: 'poe.how', glyph: 'poehow' },
   regex: { regex: '', label: '', glyph: 'magnifier' },
   league: {},
   pricecheck: {},

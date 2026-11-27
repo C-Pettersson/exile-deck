@@ -58,6 +58,15 @@ test('actions that send input cannot be chained in a Multi Action', () => {
   }
 });
 
+test('the poe.how logo is an icon choice for keys and draws in gold', () => {
+  const R = require(path.join(PLUGIN, 'bin', 'render.js'));
+  assert.equal(R.GLYPHS[0], 'poehow');
+  const svg = R.glyphKey({ glyphName: 'poehow', label: 'poe.how', sub: 'poe.how', accent: R.ACCENT.link });
+  for (const d of R.LOGO_FIGURE) assert.ok(svg.includes(d));
+  assert.ok(!svg.includes(R.ACCENT.link), 'the frame uses gold, not the link colour');
+  assert.ok(fs.readFileSync(path.join(PLUGIN, 'pi', 'index.html'), 'utf8').includes("GLYPHS_FALLBACK = ['poehow'"));
+});
+
 test('only poe.how pages and known image hosts are accepted from API data', () => {
   assert.ok(safeIcon('https://web.poecdn.com/x.png'));
   for (const bad of ['http://web.poecdn.com/x.png', 'https://example.com/x.png', 'file:///c:/x.png', 'https://poe.how.example.com/x', null]) assert.equal(safeIcon(bad), null);

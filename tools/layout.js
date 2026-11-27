@@ -19,7 +19,7 @@ const rows = [
     chat('/delve', 'Delve', 'pick'), chat('/remaining', 'Remaining', 'skull'), chat('/dnd', 'Do not disturb', 'bell'),
     chat('/passives', 'Passives', 'tree'), chat('/exit', 'Char select', 'door')],
   // Row 3: links
-  [link('https://poe.how/economy', 'Economy', 'chart'), link('https://poe.ninja/poe1/builds', 'Builds', 'sword'),
+  [link('https://poe.how/economy', 'poe.how', 'poehow'), link('https://poe.ninja/poe1/builds', 'Builds', 'sword'),
     ['regex', { label: 'Bad map mods', regex: '"!reflect|no regen"', glyph: 'magnifier' }],
     link('https://www.pathofexile.com/trade/search/{league}', 'Trade', 'scales'), link('https://www.poewiki.net/', 'Wiki', 'book'),
     link('https://poedb.tw/us/', 'poedb', 'db'), link('https://www.craftofexile.com/', 'Craft of Exile', 'anvil'),

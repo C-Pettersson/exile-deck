@@ -134,9 +134,25 @@ const G = {
   card: '<rect x="13" y="5" width="38" height="54" rx="4"/><rect x="19" y="11" width="26" height="20" rx="1"/><path d="M19 39 H45 M19 46 H45 M23 53 H41"/>',
   orb: '<circle cx="32" cy="32" r="22"/><path d="M22 26 C24 20 29 17 34 17"/>',
 };
-const GLYPHS = Object.keys(G);
+// The poe.how figure (filled, in a 330x330 box). tools/logo.js uses it for the plugin icon.
+const LOGO_FIGURE = [
+  'm135.6 211.9c-6 2.7-22.9 9.6-27.3 3 0.7-15.4-12.2-18.2-12.2-18.2l3.1-9.1-9.1-3.1v-9.1c0 0-28.1 0.1-30.4-3-2.3-3.1 13.4-32.2 18.2-45.5 19 4 64.4 3 70.4 2.5 1.1-0.1 23.1-3.2 33.7-4.5 10.5-1.3 46.2-2.9 51.6-1.4-0.7 18.3 11.3 42.8 11.3 42.8l-82 51.6c-0.9-3.8-21.3-8.7-27.3-6z',
+  'm117.5 295.9l-66.8-48.6 48.6-21.3c0 0 7.2 4.2 18.2 0 23-9.1 33.4-3 33.4-3l-57.7 36.4 30.3 33.4z',
+  'm109.3 262.4l157.9-97.1c0 0 17 32.8 12.1 45.5 11.6 6.6 33.4 6.1 33.4 6.1 0 0-94.7 23.1-167 109.3-9.7-4.3-24.3-15.2-24.3-15.2l15.2-12.1z',
+  'm269.2 88.5c0 0 46.6 23.3-75.9 27.3-38.4 1.2-61.2 9.5-106.3 3.1-45.1-6.3-102.8-1.6-48.5-18.3 78.9-24.3 81.4 18.8 188.2-21.2 23.8-0.1 42.5 9.1 42.5 9.1z',
+  'm81 79.4l9.1-60.7c0 0 9.1-19 27.3-15.2 18.2 3.7 20.5 19.4 36.4 18.2 16-1.2 65.3-18.2 66.8 12.1 1.5 30.4 0 36.5 0 36.5 0 0-55.4 20.9-88 15.2-32.7-5.8-51.6-6.1-51.6-6.1z',
+];
+const LOGO_BOX = 330;
+const GLYPHS = ['poehow', ...Object.keys(G)];
+
+function logoGlyph(x, y, size) {
+  return '<defs><linearGradient id="pgold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fbeec6"/>' +
+    '<stop offset=".5" stop-color="#e2bf6b"/><stop offset="1" stop-color="#a9813a"/></linearGradient></defs>' +
+    `<g transform="translate(${x},${y}) scale(${size / LOGO_BOX})" fill="url(#pgold)">${LOGO_FIGURE.map((d) => `<path d="${d}"/>`).join('')}</g>`;
+}
 
 function glyph(name, color, x, y, size, { width = 4.5 } = {}) {
+  if (name === 'poehow') return logoGlyph(x, y, size);
   const g = G[name] || G.question;
   const s = size / 64;
   return `<g transform="translate(${x},${y}) scale(${s})" fill="none" stroke="${color}" stroke-width="${width}" stroke-linecap="round" stroke-linejoin="round">${g}</g>`;
@@ -244,6 +260,7 @@ function moversKey({ direction, entry, icon, rank, total, divPrice }) {
 }
 
 function glyphKey({ glyphName, label, sub, accent }) {
+  if (glyphName === 'poehow') accent = C.gold;
   let inner = glyph(glyphName, accent, 40, 12, 64, { width: 4.5 });
   const l = clip(label || '', 14);
   inner += txt(72, sub ? 104 : 114, l, fit(l, 130, 22), C.text);
@@ -315,5 +332,5 @@ function errorKey(kind, msg) {
 
 module.exports = {
   toDataUrl, priceKey, chartKey, leagueKey, checkIdle, checkBusy, checkResult, checkMessage, moversKey,
-  glyphKey, errorKey, fmtNum, priceText, changeText, accentFor, ACCENT, GLYPHS, bossKey, bossDetail, bossSummary,
+  glyphKey, errorKey, fmtNum, priceText, changeText, accentFor, ACCENT, GLYPHS, LOGO_FIGURE, LOGO_BOX, bossKey, bossDetail, bossSummary,
 };

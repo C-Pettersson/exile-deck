@@ -30,6 +30,17 @@ The image shows sample data.
 | Regex search | Paste the saved regex into the search box | Copy the regex, or save one on an empty key |
 | PoE link | Open a website | |
 
+## Sample profile
+
+The sample profile has two pages for Stream Deck XL. The first page has prices, market movers, chat commands and links.
+The second page has boss profit.
+
+1. Install the plugin.
+2. Download [the sample profile](profiles/exile-deck-xl.streamDeckProfile?raw=true).
+3. Double-click the file. Stream Deck adds a profile with the name "Exile Deck".
+
+You can change each key in the key settings.
+
 ## Check the price of an item
 
 1. Make sure that the game window is active.

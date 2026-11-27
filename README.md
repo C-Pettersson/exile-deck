@@ -5,9 +5,9 @@ the price of an item in the game when you press one key. The data comes from [po
 
 ![Price keys on a Stream Deck](docs/marketplace/gallery-1-prices.png)
 
-The image shows sample data.
+The image shows sample data and simple drawings. On your Stream Deck, the keys show the item icons from the game.
 
-**The plugin is not on Elgato Marketplace yet.**
+Get the plugin on [Elgato Marketplace](https://marketplace.elgato.com/product/exile-deck-e26b08f3-b00d-4a39-a136-b46cf346b71f).
 
 *This product isn't affiliated with or endorsed by Grinding Gear Games in any way.*
 
@@ -35,7 +35,7 @@ The image shows sample data.
 The sample profile has two pages for Stream Deck XL. The first page has prices, market movers, chat commands and links.
 The second page has boss profit.
 
-1. Install the plugin.
+1. Install the plugin from Elgato Marketplace.
 2. Download [the sample profile](profiles/exile-deck-xl.streamDeckProfile?raw=true).
 3. Double-click the file. Stream Deck adds a profile with the name "Exile Deck".
 

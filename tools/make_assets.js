@@ -12,7 +12,7 @@ const G = {
   league: '<path d="M10 46 L6 18 L22 32 L32 12 L42 32 L58 18 L54 46 Z"/><path d="M10 54 H54"/>',
   regex: '<path d="M32 10 V34 M22 16 L42 28 M42 16 L22 28"/><circle cx="14" cy="50" r="4" fill="#ffffff"/><path d="M26 50 H54"/>',
   chat: '<path d="M10 12 H54 V42 H30 L18 54 V42 H10 Z"/><path d="M20 24 H44 M20 32 H36"/>',
-  boss: '<path d="M10 46 L6 18 L22 32 L32 12 L42 32 L58 18 L54 46 Z"/><path d="M10 54 H54"/>',
+  boss: '<path d="M32 7 C18 7 10 16 10 28 C10 36 14 40 18 42 V52 H46 V42 C50 40 54 36 54 28 C54 16 46 7 32 7 Z"/><circle cx="23" cy="29" r="5"/><circle cx="41" cy="29" r="5"/><path d="M26 52 V45 M32 52 V45 M38 52 V45"/>',
   link: '<path d="M27 37 L37 27"/><path d="M22 30 L16 36 C11 41 11 48 16 53 C21 58 28 58 33 53 L39 47"/><path d="M42 34 L48 28 C53 23 53 16 48 11 C43 6 36 6 31 11 L25 17"/>',
 };
 const mono = (g, w = 5) => `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><g fill="none" stroke="#ffffff" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round">${g}</g></svg>`;
@@ -30,6 +30,6 @@ both(R.leagueKey({ league: 'Path of Exile', day: null }), path.join(P, 'keys', '
 both(R.glyphKey({ glyphName: 'chat', label: 'Chat', sub: '/hideout', accent: R.ACCENT.chat }), path.join(P, 'keys', 'chat'), 72);
 both(R.glyphKey({ glyphName: 'magnifier', label: 'Regex', sub: 'saved search', accent: R.ACCENT.check }), path.join(P, 'keys', 'regex'), 72);
 both(R.glyphKey({ glyphName: 'link', label: 'Link', sub: 'website', accent: R.ACCENT.link }), path.join(P, 'keys', 'link'), 72);
-both(R.glyphKey({ glyphName: 'crown', label: 'Boss', sub: 'profit', accent: R.ACCENT.boss }), path.join(P, 'keys', 'boss'), 72);
+both(R.glyphKey({ glyphName: 'skull', label: 'Boss', sub: 'profit', accent: R.ACCENT.boss }), path.join(P, 'keys', 'boss'), 72);
 module.exports = { plugin, G, mono, CATEGORY };
 if (require.main === module) { renderPngs(jobs); console.log('assets ok', jobs.length); }

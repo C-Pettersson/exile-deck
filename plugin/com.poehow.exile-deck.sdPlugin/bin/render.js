@@ -264,11 +264,11 @@ function signedPrice(chaos, divPrice) {
   return (chaos > 0.5 ? '+' : chaos < -0.5 ? '−' : '') + p.main;
 }
 function bossKey({ boss, art, divPrice, rank }) {
-  if (!boss) return frame(C.faint, glyph('crown', C.dim, 40, 14, 64) + txt(72, 124, 'no boss', 16, C.faint));
+  if (!boss) return frame(C.faint, glyph('skull', C.dim, 40, 14, 64) + txt(72, 124, 'no boss', 16, C.faint));
   const q = QUALITY[boss.completeness];
   const noData = boss.profit == null || boss.completeness === 'no_user_data' || (!boss.realData && !boss.ev) || (!boss.ev && !boss.cost);
   const col = noData ? C.flat : boss.profit > 0.5 ? C.up : boss.profit < -0.5 ? C.down : C.flat;
-  let inner = art ? img(art, 34, 2, 76, 76) : glyph('crown', ACCENT.boss, 42, 10, 60, { width: 4 });
+  let inner = art ? img(art, 34, 2, 76, 76) : glyph('skull', ACCENT.boss, 42, 10, 60, { width: 4 });
   if (rank) inner += `<rect x="9" y="9" width="${rank >= 10 ? 38 : 30}" height="22" rx="11" fill="#000" fill-opacity="0.55"/>` + txt(rank >= 10 ? 28 : 24, 26, '#' + rank, 15, C.gold);
   let base = boss.short;
   const uber = /^Uber /.test(base);

@@ -1,7 +1,7 @@
 {
   "$schema": "https://schemas.elgato.com/streamdeck/plugins/manifest.json",
   "Name": "Exile Deck",
-  "Version": "1.0.0.0",
+  "Version": "1.0.1.0",
   "Author": "poeHow",
   "Description": "Path of Exile companion: live economy prices, one-press price check of the hovered item, boss profits, chat commands and quick links. This product isn't affiliated with or endorsed by Grinding Gear Games in any way.",
   "Category": "Exile Deck",

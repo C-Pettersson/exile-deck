@@ -35,8 +35,13 @@ Get the plugin on [Elgato Marketplace](https://marketplace.elgato.com/product/ex
 The sample profile has two pages for Stream Deck XL. The first page has prices, market movers, chat commands and links.
 The second page has boss profit.
 
-1. Install the plugin from Elgato Marketplace.
-2. Download [the sample profile](profiles/exile-deck-xl.streamDeckProfile?raw=true).
+On a Stream Deck XL, Stream Deck offers this profile when you install the plugin from Elgato Marketplace. Accept it to
+add a profile with the name "Exile Deck".
+
+You can also add the profile yourself:
+
+1. Install the plugin.
+2. Download [the sample profile](plugin/com.poehow.exile-deck.sdPlugin/profiles/exile-deck-xl.streamDeckProfile?raw=true).
 3. Double-click the file. Stream Deck adds a profile with the name "Exile Deck".
 
 You can change each key in the key settings.

@@ -31,6 +31,26 @@ function serveFixtures() {
   };
 }
 
+
+/** All file contents of a zip (a .streamDeckProfile) joined as text. Reads the central directory; stored or deflated. */
+function unzipText(buf) {
+  const zlib = require('node:zlib');
+  let eocd = buf.length - 22;
+  while (eocd >= 0 && buf.readUInt32LE(eocd) !== 0x06054b50) eocd--;
+  let p = buf.readUInt32LE(eocd + 16);
+  const out = [];
+  for (let n = buf.readUInt16LE(eocd + 10); n > 0; n--) {
+    const method = buf.readUInt16LE(p + 10);
+    const size = buf.readUInt32LE(p + 20);
+    const local = buf.readUInt32LE(p + 42);
+    p += 46 + buf.readUInt16LE(p + 28) + buf.readUInt16LE(p + 30) + buf.readUInt16LE(p + 32);
+    const start = local + 30 + buf.readUInt16LE(local + 26) + buf.readUInt16LE(local + 28);
+    const data = buf.subarray(start, start + size);
+    out.push((method === 8 ? zlib.inflateRawSync(data) : data).toString('utf8'));
+  }
+  return out.join('\n');
+}
+
 test('manifest: IDs, version and image files', () => {
   assert.equal(manifest.UUID, 'com.poehow.exile-deck');
   assert.equal(manifest.Version, VERSION + '.0');
@@ -50,6 +70,19 @@ test('the GGG disclaimer is in the README, manifest and settings page', () => {
   const line = "This product isn't affiliated with or endorsed by Grinding Gear Games in any way.";
   assert.ok(manifest.Description.includes(line));
   for (const f of ['README.md', 'plugin/com.poehow.exile-deck.sdPlugin/pi/index.html']) assert.ok(fs.readFileSync(path.join(ROOT, f), 'utf8').includes(line), f);
+});
+
+test('bundled profiles exist and use only this plugin and page keys', () => {
+  assert.ok(Array.isArray(manifest.Profiles) && manifest.Profiles.length > 0);
+  for (const p of manifest.Profiles) {
+    const file = path.join(PLUGIN, p.Name + '.streamDeckProfile');
+    assert.ok(fs.existsSync(file), file);
+    assert.equal(p.DontAutoSwitchWhenInstalled, true, 'never switch a new user away from their own profile');
+    const text = unzipText(fs.readFileSync(file));
+    const plugins = new Set([...text.matchAll(/"Plugin":\{[^}]*"UUID":"([^"]+)"/g)].map((x) => x[1]));
+    assert.ok(plugins.size > 0, 'no actions found in the profile');
+    for (const id of plugins) assert.ok([manifest.UUID, 'com.elgato.streamdeck.page'].includes(id), id);
+  }
 });
 
 test('actions that send input cannot be chained in a Multi Action', () => {

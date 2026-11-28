@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.2 (unreleased)
+
+- The sample profile for Stream Deck XL comes with the plugin. Stream Deck offers it when you install the plugin.
+
 ## 1.0.1 (unreleased)
 
 - Boss profit has its own icon. It used the same crown as League.
